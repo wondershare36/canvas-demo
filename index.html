@@ -15,34 +15,50 @@
   <script>
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
+    let isTouchDevice = 'ontouchstart' in document.documentElement
+    let painting = false;
+    let last
     canvas.width = document.documentElement.clientWidth
     canvas.height = document.documentElement.clientHeight
-    let painting = false;
-    var isTouchDevice = 'ontouchstart' in document.documentElement
+    ctx.fillStyle = "red"
+    ctx.strokeStyle = "red"
+    ctx.lineWidth = 10
+    ctx.lineCap = "round";
+
     if (isTouchDevice) {
+      canvas.ontouchstart = (e) => {
+        let x = e.touches[0].clientX
+        let y = e.touches[0].clientY
+        last=[x,y]
+      }
       canvas.ontouchmove = (e) => {
         let x = e.touches[0].clientX
         let y = e.touches[0].clientY
-        ctx.beginPath()
-        ctx.arc(x, y, 5, 0, Math.PI * 2, true);  // 右眼
-        ctx.stroke();
-        ctx.fill()
+        drawLine(last[0],last[1], x, y)
+        last=[x,y]
       }
     } else {
-      canvas.onmousedown = () => {
+      canvas.onmousedown = (e) => {
         painting = true;
+        last = [e.clientX, e.clientY]
       }
-      canvas.onmouseup = () => {
+      canvas.onmouseup = (e) => {
         painting = false;
       }
       canvas.onmousemove = (e) => {
         if (painting) {
-          ctx.beginPath()
-          ctx.arc(e.clientX, e.clientY, 5, 0, Math.PI * 2, true);  // 右眼
-          ctx.stroke();
-          ctx.fill()
+          let x = e.clientX
+          let y = e.clientY
+          drawLine(last[0], last[1], x, y)
+          last = [x, y]
         }
       }
+    }
+    function drawLine(x1, y1, x2, y2) {
+      ctx.beginPath()
+      ctx.moveTo(x1, y1)
+      ctx.lineTo(x2, y2)
+      ctx.stroke();
     }
 
   </script>
