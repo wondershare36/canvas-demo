@@ -10,21 +10,40 @@
 </head>
 
 <body>
-  <div id="canvas"></div>
+  <canvas id="canvas"></canvas>
   <script>
-    canvas.onclick = (e) => {
-      let div = document.createElement("div")
-      div.style.position="absolute"
-      div.style.left=e.clientX+"px"
-      div.style.top=e.clientY+"px"
-      div.style.width="6px"
-      div.style.height="6px"
-      div.style.marginLeft="-3px"
-      div.style.marginTop="-3px"
-      div.style.borderRadius="50%"
-      div.style.backgroundColor="black"
-      canvas.appendChild(div)
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+    canvas.width = document.documentElement.clientWidth
+    canvas.height = document.documentElement.clientHeight
+    let painting = false;
+    var isTouchDevice = 'ontouchstart' in document.documentElement
+    if (isTouchDevice) {
+      canvas.ontouchmove = (e) => {
+        let x = e.touches[0].clientX
+        let y = e.touches[0].clientY
+        ctx.beginPath()
+        ctx.arc(x, y, 5, 0, Math.PI * 2, true);  // 右眼
+        ctx.stroke();
+        ctx.fill()
+      }
+    } else {
+      canvas.onmousedown = () => {
+        painting = true;
+      }
+      canvas.onmouseup = () => {
+        painting = false;
+      }
+      canvas.onmousemove = (e) => {
+        if (painting) {
+          ctx.beginPath()
+          ctx.arc(e.clientX, e.clientY, 5, 0, Math.PI * 2, true);  // 右眼
+          ctx.stroke();
+          ctx.fill()
+        }
+      }
     }
+
   </script>
 </body>
 
